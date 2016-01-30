@@ -18,8 +18,8 @@ class Wave(object):
                              "start": self.__start}
 
     def draw(self, screen, fielddata):
-        for m in self.__minions:
-            m.draw(screen, fielddata)
+        for i in range(0, self.__minions.__len__()):
+            self.__minions[self.__minions.__len__() - 1 - i].draw(screen, fielddata)
 
     def update(self, pathdict):
         self.__pathdict = pathdict
@@ -77,14 +77,22 @@ class Minion(object):
         self.__y += self.__dir[1] / float(self.__speed * self.__freeze)
 
     def draw(self, screen, fielddata):
+        if self.__dir[0] is 1:
+            i = 3
+        if self.__dir[0] is -1:
+            i = 2
+        if self.__dir[1] is 1:
+            i = 1
+        if self.__dir[1] is -1:
+            i = 0
         self.__imageticker -= 1
         if self.__imageticker is 0:
-            self.__imageticker = 5
+            self.__imageticker = 7
             if self.__imageindex < 3:
                 self.__imageindex += 1
             else:
                 self.__imageindex = 0
-        screen.blit(self.__im[0][self.__imageindex], (int(fielddata["offsetX"] + fielddata["cellW"] * self.__x),
+        screen.blit(self.__im[i][self.__imageindex].convert_alpha(), (int(fielddata["offsetX"] + fielddata["cellW"] * self.__x),
                                 int(fielddata["offsetY"] + fielddata["cellH"] * self.__y)))
 
     def pos(self):

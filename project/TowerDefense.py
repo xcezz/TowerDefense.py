@@ -47,7 +47,7 @@ def main():
 
     level = 0
 
-    myfont = pygame.font.SysFont("None", 12)
+    myfont = pygame.font.SysFont("Verdana", 11)
 
     label_score = UI.Text(Helper.LABELPOS["score"], myfont)
     label_lifes = UI.Text(Helper.LABELPOS["lifes"], myfont)
@@ -159,7 +159,10 @@ def main():
                 if state == Helper.STATETOWER2:
                     preview = getPreview(player, fields, event.pos, Helper.TOWER2DATA)
 
-        player.removeLifes(wave.update(pathdict))
+        lifes = wave.update(pathdict)
+        if lifes > 0:
+            player.removeLifes(lifes)
+            console_text.append("gezwirbelt" + str(player.getLifes()))
         minionpos = wave.minionpositions()
         for t in turrets:
             for m in minionpos:
@@ -179,9 +182,8 @@ def main():
         label_lifes.setText([str(player.getLifes())]).draw(screen)
         label_money.setText([str(player.getMoney())]).draw(screen)
         label_level.setText([str(level)]).draw(screen)
-        if console_text.__len__() > 4:
-            label_console.setText([console_text[console_text.__len__() - 4],
-                                  console_text[console_text.__len__() - 3],
+        if console_text.__len__() > 3:
+            label_console.setText([console_text[console_text.__len__() - 3],
                                   console_text[console_text.__len__() - 2],
                                   console_text[console_text.__len__() - 1]]).draw(screen)
         else:

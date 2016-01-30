@@ -85,8 +85,8 @@ class Text(object):
 
     def draw(self, screen):
         for t in self.__text:
-            text = self.__font.render(t, 1, (0, 0, 0))
-            screen.blit(text, (self.__pos[0], self.__pos[1] + self.__text.index(t) * self.__font.size(t)[1] * 2))
+            text = self.__font.render(t, 1, (255, 255, 255))
+            screen.blit(text, (self.__pos[0], self.__pos[1] + self.__text.index(t) * self.__font.size(t)[1]))
 
 
 

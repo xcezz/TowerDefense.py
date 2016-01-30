@@ -82,23 +82,23 @@ GO = {"x": 399,
       "w": 75,
       "h": 75,
       "imp": "Images/Button_NextWave.png",
-      "ima": "Images/Button_NextWave.png",
+      "ima": "Images/Button_NextWave_Clicked.png",
       "statechange": STATEGO}
 
 DELETE = {"x": 530,
       "y": 480,
       "w": 75,
       "h": 75,
-      "imp": "Images/Button_NextWave.png",
-      "ima": "Images/Button_NextWave.png",
+      "imp": "Images/Button_Delete.png",
+      "ima": "Images/Button_Delete_Clicked.png",
       "statechange": STATEDELETE}
 
 UPGRADE = {"x": 640,
            "y": 480,
            "w": 75,
            "h": 75,
-          "imp": "Images/Button_NextWave.png",
-          "ima": "Images/Button_NextWave.png",
+          "imp": "Images/Button_Upgrade.png",
+          "ima": "Images/Button_Upgrade_Clicked.png",
            "statechange": STATEUPGRADE}
 WAVES = {0: {"hp": 0,
              "count": 0,
@@ -150,12 +150,12 @@ WAVES = {0: {"hp": 0,
              "spawnrate": 20,
              "im": "Images/minion.bmp"}}
 
-LABELPOS = {"score": (600, 50),
-            "lifes": (600, 70),
-            "money": (620, 50),
-            "console": (100, 500),
+LABELPOS = {"score": (681, 74),
+            "lifes": (587, 113),
+            "money": (681, 113),
+            "console": (57, 525),
             "info": (600, 400),
-            "level": (620, 70)}
+            "level": (587, 74)}
 
 
 def postocoord(pos):
@@ -167,9 +167,10 @@ def animations(pygame, path):
     for i in range(0, 4):
         anim = []
         for j in range(0, 4):
-            rect = pygame.Rect(15 * i, 15 * j, 15, 15)
-            image = pygame.Surface(rect.size).convert()
-            image.blit(pygame.image.load(path).convert(), (0, 0), rect)
+            rect = pygame.Rect(25 * j, 25 * i, 25, 25)
+            image = pygame.Surface(rect.size, pygame.SRCALPHA, 32)
+            image = image.convert_alpha()
+            image.blit(pygame.image.load(path), (0, 0), rect)
             anim.append(image)
         sprites.update({i: anim})
     return sprites
