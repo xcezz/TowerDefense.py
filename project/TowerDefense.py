@@ -35,7 +35,7 @@ def main():
 
     turrets = []
     projectiles = []
-    wave = GameObject.Wave(Helper.WAVES[0], Helper.animations(pygame, "Images/z.png"),
+    wave = GameObject.Wave(Helper.WAVES[0], Helper.animations(pygame, "Images/GenericEnemy.png"),
                            pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
 
     preview = None
@@ -56,7 +56,7 @@ def main():
     label_console = UI.Text(Helper.LABELPOS["console"], myfont)
     label_info = UI.Text(Helper.LABELPOS["info"], myfont)
 
-    test = Helper.animations(pygame, "Images/z.png")
+    test = Helper.animations(pygame, "Images/GenericEnemy.png")
     # Event loop
     while 1:
         clock.tick(FPS)
@@ -126,7 +126,7 @@ def main():
                     if click == Helper.STATEGO and wave.done():
                         level += 1
                         wave = GameObject.Wave(Helper.WAVES[level],
-                                               Helper.animations(pygame, "Images/z.png"),
+                                               Helper.animations(pygame, "Images/GenericEnemy.png"),
                                                pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
                         state = Helper.STATESELECT
                         console_text.append("This Wave: HP - " + str(Helper.WAVES[level]["hp"]) + " Value - " + str(Helper.WAVES[level]["score"]))
