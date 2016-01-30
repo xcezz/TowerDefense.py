@@ -163,6 +163,9 @@ def main():
         if lifes > 0:
             player.removeLifes(lifes)
             console_text.append("gezwirbelt" + str(player.getLifes()))
+        elif lifes == -1:
+            console_text.append("block du hs")
+
         minionpos = wave.minionpositions()
         for t in turrets:
             for m in minionpos:
@@ -172,7 +175,7 @@ def main():
                         value = wave.hit(minionpos.index(m), shoot[1], shoot[2], shoot[3])
                         player.addScore(value)
                         player.addMoney(value)
-                        projectiles.append(GameObject.projectile(t.pos(), m, Helper.FIELDDATA, Helper.SHOOTDURATION))
+                        projectiles.append(GameObject.projectile(t.pos(), m, Helper.FIELDDATA, Helper.SHOOTDURATION, pygame.image.load("Images/minion.bmp").convert()))
                         break
             t.update()
 
@@ -195,9 +198,6 @@ def main():
             pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX, (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
             pygame.draw.circle(screen, (255, 0, 0), pos, info.getRange() * Helper.FIELDCELLWIDTH, 1)
 
-        for i in test:
-            for j in test[i]:
-                screen.blit(j,(0, test[i].index(j) * 15))
         pygame.display.flip()
 
 
@@ -227,12 +227,6 @@ def draw(screen, ui, turrets, wave, background, preview, projectiles):
 
         ui.draw(screen)
         wave.draw(screen, Helper.FIELDDATA)
-        for p in projectiles:
-            data = p.data()
-            if data:
-                pygame.draw.line(screen, (255, 0, 0), data[0], data[1], 2)
-            else:
-                projectiles.remove(p)
         for t in turrets:
             t.draw(screen, Helper.FIELDDATA)
         if preview is not None:
@@ -240,8 +234,12 @@ def draw(screen, ui, turrets, wave, background, preview, projectiles):
             pos = preview.pos()
             pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX,
                    (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
-            pygame.draw.circle(screen, (255, 0, 0), pos, preview.getRange()*10, 1)
-
+            pygame.draw.circle(screen, (255, 0, 0), pos, preview.getRange() * Helper.FIELDCELLWIDTH, 1)
+        for p in projectiles:
+            if p.update():
+                p.draw(screen)
+            else:
+                projectiles.remove(p)
 
 def outsideoffield(tpos):
     return tpos[0] > Helper.FIELDSIZE - 2 or tpos[1] > Helper.FIELDSIZE - 2 or tpos[0] < 0 or tpos[1] < 0
@@ -252,8 +250,10 @@ def getPreview(player, fields, mousepos, data):
     image = pygame.image.load(data["image"]).convert_alpha()
     image = pygame.transform.scale(image, (Helper.FIELDCELLHEIGHT * 2, Helper.FIELDCELLWIDTH * 2))
     turret = GameObject.Tower(image, tpos, data)
-    if not (fields.available(tpos, turret.size()) and player.getMoney() >= 5):
-        im = "Images/Tower2.png"
+    if not (fields.available(tpos, turret.size()) and player.getMoney() >= turret.getCost()):
+        image = pygame.transform.scale(pygame.image.load(data["imp"]).convert_alpha(),
+                                       (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
+        turret.unavailable(image)
     preview = turret
     if outsideoffield(tpos):
         preview = None

@@ -32,9 +32,12 @@ class Wave(object):
 
         finished = 0
         for m in self.__minions:
-            if m.update(self.__pathdict.get(m.pos())):
+            value = m.update(self.__pathdict.get(m.pos()))
+            if value is True:
                 finished += 1
                 self.__minions.remove(m)
+            elif value == -1:
+                finished = -1
         return finished
 
     def minionpositions(self):
@@ -99,9 +102,11 @@ class Minion(object):
         return self.__pos
 
     def update(self, dir):
+        value = False
         self.move()
-        if dir == (0, 0):
+        if dir == (0, 0):  #block
             self.__dir = (0, 1)
+            value = -1
         else:
             self.__dir = dir
         if self.__freezeduration is 0:
@@ -116,7 +121,8 @@ class Minion(object):
             self.__x = self.__pos[0]
             self.__y = self.__pos[1]
         if self.__y is self.__goal:
-            return True
+            value = True
+        return value
 
     def getScore(self):
         return self.__score
@@ -175,18 +181,32 @@ class Tower(object):
         self.__range += 1
         self.__cost = int(self.__cost * 1.5)
 
+    def unavailable(self, im):
+        self.__im = im
+
 
 class projectile(object):
-    def __init__(self, pos1, pos2, fielddata, duration):
+    def __init__(self, pos1, pos2, fielddata, duration, image):
+        self.__im = image
         self.__start = (fielddata["offsetX"] + fielddata["cellW"] * (pos1[0] + 1),
                         fielddata["offsetY"] + fielddata["cellH"] * (pos1[1] + 1))
         self.__end = (fielddata["offsetX"] + fielddata["cellW"] / 2 + fielddata["cellW"] * pos2[0],
                       fielddata["offsetY"] + fielddata["cellH"] / 2 + fielddata["cellH"] * pos2[1])
         self.__tick = duration
+        self.__x = float(self.__start[0])
+        self.__y = float(self.__start[1])
+        self.__dx = float((self.__end[0] - self.__start[0])) / float(duration)
+        self.__dy = float((self.__end[1] - self.__start[1])) / float(duration)
+        self.__pos = self.__start
 
-    def data(self):
-        if self.__tick > 0:
-            self.__tick -= 1
-            return self.__start, self.__end
+    def draw(self, screen):
+        screen.blit(self.__im, (self.__x, self.__y))
+
+    def update(self):
+        self.__tick -= 1
+        if self.__tick >= 0:
+            self.__x += self.__dx
+            self.__y += self.__dy
+            return True
         else:
             return False

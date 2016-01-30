@@ -43,6 +43,7 @@ TOWER1DATA = {"cost": 5,
               "freezeduration": 0,
               "range": 5,
               "image": "Images/Tower1.png",
+              "imp": "Images/Tower1_Red.png",
               "size": 2}
 
 TOWER2DATA = {"cost": 5,
@@ -52,6 +53,7 @@ TOWER2DATA = {"cost": 5,
               "freeze": 2,
               "freezeduration": 50,
               "image": "Images/Tower2.png",
+              "imp": "Images/Tower2_Red.png",
               "size": 2}
 
 TOWER1BUTTON = {"x": 550,
@@ -79,8 +81,8 @@ TOWER3 = {"x": 530,
           "statechange": STATETOWER3}
 GO = {"x": 408,
       "y": 518,
-      "w": 75,
-      "h": 75,
+      "w": 60,
+      "h": 60,
       "imp": "Images/Button_NextWave.png",
       "ima": "Images/Button_NextWave_Clicked.png",
       "statechange": STATEGO}

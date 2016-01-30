@@ -77,10 +77,12 @@ class Field(object):
                     fields[i][j].add(fields[i][j - 1], Node.LEFT)
                 if j < size - 1:
                     fields[i][j].add(fields[i][j + 1], Node.RIGHT)
+        fields[0][self.__size / 2].setAvailable(False, None)
         self.__fields = fields
 
     def getpath(self):
         todo = []
+        self.__fields[0][self.__size / 2].setAvailable(True, None)
         for i in range(0, self.__size):
             for j in range(0, self.__size):
                 self.__fields[i][j].setvalue(-1)
@@ -120,6 +122,8 @@ class Field(object):
             pathdict.update({(i, self.__size): (-1, 0)})
 
         pathdict.update({(self.__size / 2, self.__size): (0, 1)})
+
+        self.__fields[0][self.__size / 2].setAvailable(False, None)
 
         return pathdict
 
