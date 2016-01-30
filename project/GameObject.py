@@ -69,13 +69,22 @@ class Minion(object):
         self.__goal = data["goal"]
         self.__freeze = 1
         self.__freezeduration = 0
+        self.__imageticker = 20
+        self.__imageindex = 0
 
     def move(self):
         self.__x += self.__dir[0] / float(self.__speed * self.__freeze)
         self.__y += self.__dir[1] / float(self.__speed * self.__freeze)
 
     def draw(self, screen, fielddata):
-        screen.blit(self.__im, (int(fielddata["offsetX"] + fielddata["cellW"] * self.__x),
+        self.__imageticker -= 1
+        if self.__imageticker is 0:
+            self.__imageticker = 5
+            if self.__imageindex < 3:
+                self.__imageindex += 1
+            else:
+                self.__imageindex = 0
+        screen.blit(self.__im[0][self.__imageindex], (int(fielddata["offsetX"] + fielddata["cellW"] * self.__x),
                                 int(fielddata["offsetY"] + fielddata["cellH"] * self.__y)))
 
     def pos(self):

@@ -161,3 +161,17 @@ LABELPOS = {"score": (600, 50),
 def postocoord(pos):
     return (pos[0] - FIELDOFFSETX) / FIELDCELLWIDTH, (pos[1] - FIELDOFFSETY) / FIELDCELLHEIGHT
 
+
+def animations(pygame, path):
+    sprites = {}
+    for i in range(0, 4):
+        anim = []
+        for j in range(0, 4):
+            rect = pygame.Rect(15 * i, 15 * j, 15, 15)
+            image = pygame.Surface(rect.size).convert()
+            image.blit(pygame.image.load(path).convert(), (0, 0), rect)
+            anim.append(image)
+        sprites.update({i: anim})
+    return sprites
+
+

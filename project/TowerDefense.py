@@ -4,7 +4,6 @@ import UI
 import Path
 import math
 import Player
-from pygame.locals import *
 import GameObject
 
 
@@ -36,7 +35,7 @@ def main():
 
     turrets = []
     projectiles = []
-    wave = GameObject.Wave(Helper.WAVES[0], pygame.image.load(Helper.WAVES[0]["im"]).convert(),
+    wave = GameObject.Wave(Helper.WAVES[0], Helper.animations(pygame, "Images/z.png"),
                            pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
 
     preview = None
@@ -56,6 +55,8 @@ def main():
     label_level = UI.Text(Helper.LABELPOS["level"], myfont)
     label_console = UI.Text(Helper.LABELPOS["console"], myfont)
     label_info = UI.Text(Helper.LABELPOS["info"], myfont)
+
+    test = Helper.animations(pygame, "Images/z.png")
     # Event loop
     while 1:
         clock.tick(FPS)
@@ -125,7 +126,7 @@ def main():
                     if click == Helper.STATEGO and wave.done():
                         level += 1
                         wave = GameObject.Wave(Helper.WAVES[level],
-                                               pygame.image.load(Helper.WAVES[level]["im"]).convert(),
+                                               Helper.animations(pygame, "Images/z.png"),
                                                pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
                         state = Helper.STATESELECT
                         console_text.append("This Wave: HP - " + str(Helper.WAVES[level]["hp"]) + " Value - " + str(Helper.WAVES[level]["score"]))
@@ -162,7 +163,6 @@ def main():
         minionpos = wave.minionpositions()
         for t in turrets:
             for m in minionpos:
-                # check destroy // zu rechenaufwendigggg
                 if math.sqrt(math.pow((t.pos()[0] + 1 - m[0]), 2) + math.pow((t.pos()[1] + 1 - m[1]), 2)) <= t.getRange():
                     shoot = t.shoot()
                     if shoot[0]:
@@ -193,6 +193,9 @@ def main():
             pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX, (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
             pygame.draw.circle(screen, (255, 0, 0), pos, info.getRange() * Helper.FIELDCELLWIDTH, 1)
 
+        for i in test:
+            for j in test[i]:
+                screen.blit(j,(0, test[i].index(j) * 15))
         pygame.display.flip()
 
 
@@ -254,12 +257,5 @@ def getPreview(player, fields, mousepos, data):
         preview = None
     return preview
 
-
-def destroy(mpos, tower):
-    for i in range(0, tower.size()):
-        for j in range(0, tower.size()):
-            if mpos == (tower.pos()[0] + i, tower.pos()[1] + j):
-                return True
-    return False
 
 if __name__ == '__main__': main()
