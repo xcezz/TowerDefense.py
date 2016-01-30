@@ -188,10 +188,10 @@ class Tower(object):
 class projectile(object):
     def __init__(self, pos1, pos2, fielddata, duration, image):
         self.__im = image
-        self.__start = (fielddata["offsetX"] + fielddata["cellW"] * (pos1[0] + 1),
-                        fielddata["offsetY"] + fielddata["cellH"] * (pos1[1] + 1))
-        self.__end = (fielddata["offsetX"] + fielddata["cellW"] / 2 + fielddata["cellW"] * pos2[0],
-                      fielddata["offsetY"] + fielddata["cellH"] / 2 + fielddata["cellH"] * pos2[1])
+        self.__start = (fielddata["offsetX"] + fielddata["cellW"] * (pos1[0] + 1) - 3,
+                        fielddata["offsetY"] + fielddata["cellH"] * (pos1[1] + 1) - 3)
+        self.__end = (fielddata["offsetX"] + fielddata["cellW"] / 2 + fielddata["cellW"] * pos2[0] +4,
+                      fielddata["offsetY"] + fielddata["cellH"] / 2 + fielddata["cellH"] * pos2[1] + 4)
         self.__tick = duration
         self.__x = float(self.__start[0])
         self.__y = float(self.__start[1])

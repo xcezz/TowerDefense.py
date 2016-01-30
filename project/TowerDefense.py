@@ -31,7 +31,7 @@ def main():
     pygame.display.flip()
 
     clock = pygame.time.Clock()
-    FPS = 60
+    FPS = 10
 
     turrets = []
     projectiles = []
@@ -175,7 +175,7 @@ def main():
                         value = wave.hit(minionpos.index(m), shoot[1], shoot[2], shoot[3])
                         player.addScore(value)
                         player.addMoney(value)
-                        projectiles.append(GameObject.projectile(t.pos(), m, Helper.FIELDDATA, Helper.SHOOTDURATION, pygame.image.load("Images/minion.bmp").convert()))
+                        projectiles.append(GameObject.projectile(t.pos(), m, Helper.FIELDDATA, Helper.SHOOTDURATION, pygame.image.load("Images/Projectile_Normal.png").convert_alpha()))
                         break
             t.update()
 
