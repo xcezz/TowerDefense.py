@@ -31,7 +31,7 @@ def main():
     pygame.display.flip()
 
     clock = pygame.time.Clock()
-    FPS = 10
+    FPS = 60
 
     turrets = []
     projectiles = []
@@ -55,8 +55,8 @@ def main():
     label_level = UI.Text(Helper.LABELPOS["level"], myfont)
     label_console = UI.Text(Helper.LABELPOS["console"], myfont)
     label_info = UI.Text(Helper.LABELPOS["info"], myfont)
+    label_upgrade = UI.Text(Helper.LABELPOS["upgrade"], myfont)
 
-    test = Helper.animations(pygame, "Images/GenericEnemy.png")
     # Event loop
     while 1:
         clock.tick(FPS)
@@ -126,13 +126,14 @@ def main():
                     if click == Helper.STATEGO and wave.done():
                         level += 1
                         wave = GameObject.Wave(Helper.WAVES[level],
-                                               Helper.animations(pygame, "Images/GenericEnemy.png"),
+                                               Helper.animations(pygame, Helper.WAVES[level]["im"]),
                                                pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
                         state = Helper.STATESELECT
                         console_text.append("This Wave: HP - " + str(Helper.WAVES[level]["hp"]) + " Value - " + str(Helper.WAVES[level]["score"]))
                         console_text.append("Next Wave: HP - " + str(Helper.WAVES[level + 1]["hp"]) + " Value - " + str(Helper.WAVES[level + 1]["score"]))
 
                     if click == Helper.STATEDELETE and info is not None:
+                        player.addMoney(info.sell())
                         turrets.remove(info)
                         for i in range(0, info.size()):
                             for j in range(0, turret.size()):
@@ -143,8 +144,8 @@ def main():
 
                     if click == Helper.STATEUPGRADE and info is not None:
                         if player.getMoney() >= info.getCost():
-                            info.upgrade()
                             player.addMoney(-info.getCost())
+                            info.upgrade()
                             state = Helper.STATESELECT
 
                 if event.button == 3:
@@ -162,9 +163,9 @@ def main():
         lifes = wave.update(pathdict)
         if lifes > 0:
             player.removeLifes(lifes)
-            console_text.append("gezwirbelt" + str(player.getLifes()))
+            console_text.append("Lifes remaining: " + str(player.getLifes()))
         elif lifes == -1:
-            console_text.append("block du hs")
+            console_text.append("Path is blocked!")
 
         minionpos = wave.minionpositions()
         for t in turrets:
@@ -175,28 +176,38 @@ def main():
                         value = wave.hit(minionpos.index(m), shoot[1], shoot[2], shoot[3])
                         player.addScore(value)
                         player.addMoney(value)
-                        projectiles.append(GameObject.projectile(t.pos(), m, Helper.FIELDDATA, Helper.SHOOTDURATION, pygame.image.load("Images/Projectile_Normal.png").convert_alpha()))
+                        p = GameObject.projectile(t.pos(),
+                                                  m, Helper.FIELDDATA, Helper.SHOOTDURATION,
+                                                  pygame.image.load(Helper.PROJETILE[t.projectile()]).convert_alpha())
+                        projectiles.append(p)
                         break
             t.update()
 
         draw(screen, ui, turrets, wave, background, preview, projectiles)
 
-        label_score.setText([str(player.getScore())]).draw(screen)
-        label_lifes.setText([str(player.getLifes())]).draw(screen)
-        label_money.setText([str(player.getMoney())]).draw(screen)
-        label_level.setText([str(level)]).draw(screen)
         if console_text.__len__() > 3:
             label_console.setText([console_text[console_text.__len__() - 3],
                                   console_text[console_text.__len__() - 2],
                                   console_text[console_text.__len__() - 1]]).draw(screen)
         else:
             label_console.setText(console_text).draw(screen)
-        label_info.setText(["lellllllle"]).draw(screen)
 
         if info is not None:
             pos = info.pos()
             pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX, (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
             pygame.draw.circle(screen, (255, 0, 0), pos, info.getRange() * Helper.FIELDCELLWIDTH, 1)
+            info_text = info.getInfo()
+            label_info.setText(info_text).draw(screen)
+            upgrade_text = info.getUpgrade()
+            label_upgrade.setText(upgrade_text).draw(screen)
+            ui.activ()
+        else:
+            ui.deactiv()
+
+        label_score.setText([str(player.getScore())]).draw(screen)
+        label_lifes.setText([str(player.getLifes())]).draw(screen)
+        label_money.setText([str(player.getMoney())]).draw(screen)
+        label_level.setText([str(level)]).draw(screen)
 
         pygame.display.flip()
 
@@ -205,19 +216,19 @@ def initUI():
     ui = UI.Handler(UI.Field(Helper.FIELDUIDATA))
 
     ui.addButton(UI.Button(Helper.TOWER1BUTTON, pygame.image.load(Helper.TOWER1BUTTON["imp"]).convert_alpha(),
-                           pygame.image.load(Helper.TOWER1BUTTON["ima"]).convert_alpha()))
+                           pygame.image.load(Helper.TOWER1BUTTON["ima"]).convert_alpha(), True))
 
     ui.addButton(UI.Button(Helper.TOWER2, pygame.image.load(Helper.TOWER2["imp"]).convert_alpha(),
-                           pygame.image.load(Helper.TOWER2["ima"]).convert_alpha()))
+                           pygame.image.load(Helper.TOWER2["ima"]).convert_alpha(), True))
 
     ui.addButton(UI.Button(Helper.GO, pygame.image.load(Helper.GO["imp"]).convert_alpha(),
-                           pygame.image.load(Helper.GO["ima"]).convert_alpha()))
+                           pygame.image.load(Helper.GO["ima"]).convert_alpha(), True))
 
     ui.addButton(UI.Button(Helper.DELETE, pygame.image.load(Helper.DELETE["imp"]).convert_alpha(),
-                           pygame.image.load(Helper.DELETE["ima"]).convert_alpha()))
+                           pygame.image.load(Helper.DELETE["ima"]).convert_alpha(), False))
 
     ui.addButton(UI.Button(Helper.UPGRADE, pygame.image.load(Helper.UPGRADE["imp"]).convert_alpha(),
-                           pygame.image.load(Helper.UPGRADE["ima"]).convert_alpha()))
+                           pygame.image.load(Helper.UPGRADE["ima"]).convert_alpha(), False))
 
     return ui
 
@@ -240,6 +251,7 @@ def draw(screen, ui, turrets, wave, background, preview, projectiles):
                 p.draw(screen)
             else:
                 projectiles.remove(p)
+
 
 def outsideoffield(tpos):
     return tpos[0] > Helper.FIELDSIZE - 2 or tpos[1] > Helper.FIELDSIZE - 2 or tpos[0] < 0 or tpos[1] < 0

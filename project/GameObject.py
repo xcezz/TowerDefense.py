@@ -135,6 +135,9 @@ class Minion(object):
 
 
 class Tower(object):
+    COSTMULT = 1.5
+    DAMAGEMULT = 1.2
+
     def __init__(self, im, pos, data):
         self.__im = im
         self.__x = pos[0]
@@ -148,6 +151,7 @@ class Tower(object):
         self.__size = data["size"]
         self.__freeze = data["freeze"]
         self.__freezeduration = data["freezeduration"]
+        self.__projectile = data["projectile"]
 
     def size(self):
         return self.__size
@@ -177,12 +181,30 @@ class Tower(object):
 
     def upgrade(self):
         self.__level += 1
-        self.__damage += 10
+        self.__damage = int(self.__damage * Tower.DAMAGEMULT)
         self.__range += 1
-        self.__cost = int(self.__cost * 1.5)
+        self.__cost = int(self.__cost * Tower.COSTMULT)
 
     def unavailable(self, im):
         self.__im = im
+
+    def getInfo(self):
+        return ["Sell: " + str(int(self.__cost / Tower.COSTMULT)),
+                "Level: " + str(self.__level),
+                "Range: " + str(self.__range),
+                "Damage: " + str(self.__damage)]
+
+    def getUpgrade(self):
+        return ["Cost: " + str(self.__cost),
+                "Level: " + str(self.__level + 1),
+                "Range: " + str(self.__range + 1),
+                "Damage: " + str(int(self.__damage * Tower.DAMAGEMULT))]
+
+    def sell(self):
+        return int(self.__cost / Tower.COSTMULT)
+
+    def projectile(self):
+        return self.__projectile
 
 
 class projectile(object):
@@ -190,7 +212,7 @@ class projectile(object):
         self.__im = image
         self.__start = (fielddata["offsetX"] + fielddata["cellW"] * (pos1[0] + 1) - 3,
                         fielddata["offsetY"] + fielddata["cellH"] * (pos1[1] + 1) - 3)
-        self.__end = (fielddata["offsetX"] + fielddata["cellW"] / 2 + fielddata["cellW"] * pos2[0] +4,
+        self.__end = (fielddata["offsetX"] + fielddata["cellW"] / 2 + fielddata["cellW"] * pos2[0] + 4,
                       fielddata["offsetY"] + fielddata["cellH"] / 2 + fielddata["cellH"] * pos2[1] + 4)
         self.__tick = duration
         self.__x = float(self.__start[0])

@@ -22,6 +22,9 @@ FIELDCELLHEIGHT = 12
 
 SHOOTDURATION = 20
 
+PROJETILE = {0: "Images/Projectile_Normal.png",
+             1: "Images/Projectile_Freeze.png"}
+
 FIELDDATA = {"offsetX": FIELDOFFSETX,
              "cellW": FIELDCELLWIDTH,
              "offsetY": FIELDOFFSETY,
@@ -44,7 +47,8 @@ TOWER1DATA = {"cost": 5,
               "range": 5,
               "image": "Images/Tower1.png",
               "imp": "Images/Tower1_Red.png",
-              "size": 2}
+              "size": 2,
+              "projectile": 0}
 
 TOWER2DATA = {"cost": 5,
               "cooldown": 60,
@@ -54,7 +58,8 @@ TOWER2DATA = {"cost": 5,
               "freezeduration": 50,
               "image": "Images/Tower2.png",
               "imp": "Images/Tower2_Red.png",
-              "size": 2}
+              "size": 2,
+              "projectile": 1}
 
 TOWER1BUTTON = {"x": 550,
                 "y": 200,
@@ -72,13 +77,6 @@ TOWER2 = {"x": 650,
           "ima": "Images/Button_Tower2_Clicked.png",
           "statechange": STATETOWER2}
 
-TOWER3 = {"x": 530,
-          "y": 300,
-          "w": 75,
-          "h": 75,
-          "imp": "Images/Button_Tower2_Normal.png",
-          "ima": "Images/Button_Tower2_Clicked.png",
-          "statechange": STATETOWER3}
 GO = {"x": 408,
       "y": 518,
       "w": 60,
@@ -87,77 +85,29 @@ GO = {"x": 408,
       "ima": "Images/Button_NextWave_Clicked.png",
       "statechange": STATEGO}
 
-DELETE = {"x": 530,
-      "y": 480,
+DELETE = {"x": 545,
+      "y": 450,
       "w": 75,
       "h": 75,
       "imp": "Images/Button_Delete.png",
       "ima": "Images/Button_Delete_Clicked.png",
       "statechange": STATEDELETE}
 
-UPGRADE = {"x": 640,
-           "y": 480,
+UPGRADE = {"x": 645,
+           "y": 450,
            "w": 75,
            "h": 75,
           "imp": "Images/Button_Upgrade.png",
           "ima": "Images/Button_Upgrade_Clicked.png",
            "statechange": STATEUPGRADE}
-WAVES = {0: {"hp": 0,
-             "count": 0,
-             "speed": 0,
-             "score": 0,
-             "goal": GOAL,
-             "spawnrate": 20,
-             "im": "Images/minion.bmp"},
-         1: {"hp": 50,
-             "count": 1,
-             "speed": 20,
-             "score": 5,
-             "goal": GOAL,
-             "spawnrate": 20,
-             "im": "Images/minion.bmp"},
-         2: {"hp": 70,
-             "count": 10,
-             "speed": 20,
-             "score": 5,
-             "goal": GOAL,
-             "spawnrate": 20,
-             "im": "Images/minion.bmp"},
-         3: {"hp": 120,
-             "count": 10,
-             "speed": 30,
-             "score": 10,
-             "goal": GOAL,
-             "spawnrate": 20,
-             "im": "Images/minion.bmp"},
-         4: {"hp": 120,
-             "count": 10,
-             "speed": 30,
-             "score": 10,
-             "goal": GOAL,
-             "spawnrate": 20,
-             "im": "Images/minion.bmp"},
-         5: {"hp": 120,
-             "count": 50,
-             "speed": 30,
-             "score": 10,
-             "goal": GOAL,
-             "spawnrate": 20,
-             "im": "Images/minion.bmp"},
-         6: {"hp": 120,
-             "count": 50,
-             "speed": 30,
-             "score": 10,
-             "goal": GOAL,
-             "spawnrate": 20,
-             "im": "Images/minion.bmp"}}
 
 LABELPOS = {"score": (681, 74),
             "lifes": (587, 113),
             "money": (681, 113),
             "console": (57, 525),
-            "info": (600, 400),
-            "level": (587, 74)}
+            "info": (550, 324),
+            "level": (587, 74),
+            "upgrade": (650, 324)}
 
 
 def postocoord(pos):
@@ -177,4 +127,28 @@ def animations(pygame, path):
         sprites.update({i: anim})
     return sprites
 
+WAVES = {0: {"hp": 0,
+             "count": 0,
+             "speed": 0,
+             "score": 0,
+             "goal": GOAL,
+             "spawnrate": 0,
+             "im": "Images/GenericEnemy.png"}}
 
+for i in range(1, 51):
+    WAVES.update({i: {"hp": 50 + int(i * 20 * 1.2),
+                      "count": 15,
+                      "speed": 20,
+                      "score": 1 + int(i / 2),
+                      "goal": GOAL,
+                      "spawnrate": 30,
+                      "im": "Images/GenericEnemy.png"}})
+    if i % 2 == 0:
+        WAVES[i].update({"im": "Images/FastEnemy.png"})
+        WAVES[i].update({"speed": 10})
+    if i % 5 == 0:
+        WAVES[i].update({"im": "Images/SlowEnemy.png"})
+        WAVES[i].update({"speed": 30})
+        WAVES[i].update({"count": 20})
+        WAVES[i].update({"spawnrate": 60})
+        WAVES[i].update({"hp": 50 + int(i * 30 * 1.3)})

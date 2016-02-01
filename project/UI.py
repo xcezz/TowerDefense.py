@@ -22,11 +22,22 @@ class Handler(object):
 
     def draw(self, screen):
         for e in self.__buttons:
-            e.draw(screen)
+            if e.getVisible():
+                e.draw(screen)
+
+    def activ(self):
+        for e in self.__buttons:
+            if not e.constant():
+                e.visible()
+
+    def deactiv(self):
+        for e in self.__buttons:
+            if not e.constant():
+                e.invisible()
 
 
 class Button(object):
-    def __init__(self, data, imp, ima):
+    def __init__(self, data, imp, ima, constant):
         self.__x = data["x"]
         self.__y = data["y"]
         self.__w = data["w"]
@@ -35,6 +46,8 @@ class Button(object):
         self.__image_passive = imp
         self.__image_active = ima
         self.__image = imp
+        self.__constant = constant
+        self.__visible = True
         pass
 
     def isInside(self, (x, y)):
@@ -53,6 +66,18 @@ class Button(object):
 
     def draw(self, screen):
         screen.blit(self.__image, (self.__x, self.__y))
+
+    def constant(self):
+        return self.__constant
+
+    def visible(self):
+        self.__visible = True
+
+    def invisible(self):
+        self.__visible = False
+
+    def getVisible(self):
+        return self.__visible
 
 
 class Field(object):
