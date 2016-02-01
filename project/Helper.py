@@ -15,6 +15,8 @@ FIELDEND = 5
 
 GOAL = FIELDSIZE + FIELDEND - 1
 
+MAXLEVEL = 50
+
 FIELDOFFSETX = 84
 FIELDOFFSETY = 74
 FIELDCELLWIDTH = 12
@@ -135,11 +137,11 @@ WAVES = {0: {"hp": 0,
              "spawnrate": 0,
              "im": "Images/GenericEnemy.png"}}
 
-for i in range(1, 51):
-    WAVES.update({i: {"hp": 50 + int(i * 20 * 1.2),
+for i in range(1, MAXLEVEL + 1):
+    WAVES.update({i: {"hp": 20 + int(i * 20 * 1.2),
                       "count": 15,
                       "speed": 20,
-                      "score": 1 + int(i / 2),
+                      "score": 2,
                       "goal": GOAL,
                       "spawnrate": 30,
                       "im": "Images/GenericEnemy.png"}})
@@ -151,4 +153,6 @@ for i in range(1, 51):
         WAVES[i].update({"speed": 30})
         WAVES[i].update({"count": 20})
         WAVES[i].update({"spawnrate": 60})
-        WAVES[i].update({"hp": 50 + int(i * 30 * 1.3)})
+        WAVES[i].update({"hp": 50 + int(i * 40 * 1.4)})
+WAVES[MAXLEVEL].update({"count": 50})
+WAVES[MAXLEVEL].update({"count": 50})

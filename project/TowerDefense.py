@@ -32,6 +32,7 @@ def main():
 
     clock = pygame.time.Clock()
     FPS = 60
+    speed = 1
 
     turrets = []
     projectiles = []
@@ -69,13 +70,13 @@ def main():
                 shift = True
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_LCTRL:
-                FPS = 300
+                speed = 10
 
             if event.type == pygame.KEYUP and event.key == pygame.K_LSHIFT:
                 shift = False
 
             if event.type == pygame.KEYUP and event.key == pygame.K_LCTRL:
-                FPS = 60
+                speed = 1
 
             if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -124,13 +125,25 @@ def main():
                             preview = None
 
                     if click == Helper.STATEGO and wave.done():
-                        level += 1
-                        wave = GameObject.Wave(Helper.WAVES[level],
-                                               Helper.animations(pygame, Helper.WAVES[level]["im"]),
-                                               pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
-                        state = Helper.STATESELECT
-                        console_text.append("This Wave: HP - " + str(Helper.WAVES[level]["hp"]) + " Value - " + str(Helper.WAVES[level]["score"]))
-                        console_text.append("Next Wave: HP - " + str(Helper.WAVES[level + 1]["hp"]) + " Value - " + str(Helper.WAVES[level + 1]["score"]))
+                        if level < Helper.MAXLEVEL - 1:
+                            level += 1
+                            wave = GameObject.Wave(Helper.WAVES[level],
+                                                   Helper.animations(pygame, Helper.WAVES[level]["im"]),
+                                                   pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
+                            state = Helper.STATESELECT
+                            console_text.append("This Wave: HP - " + str(Helper.WAVES[level]["hp"]) + " Value - " +
+                                                str(Helper.WAVES[level]["score"]))
+                            console_text.append("Next Wave: HP - " + str(Helper.WAVES[level + 1]["hp"]) + " Value - " +
+                                                str(Helper.WAVES[level + 1]["score"]))
+                        elif level == Helper.MAXLEVEL - 1:
+                            level += 1
+                            wave = GameObject.Wave(Helper.WAVES[level],
+                                                   Helper.animations(pygame, Helper.WAVES[level]["im"]),
+                                                   pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
+                            state = Helper.STATESELECT
+                            console_text.append("This Wave: HP - " + str(Helper.WAVES[level]["hp"]) + " Value - " +
+                                                str(Helper.WAVES[level]["score"]))
+                            console_text.append("Last Level!")
 
                     if click == Helper.STATEDELETE and info is not None:
                         player.addMoney(info.sell())
@@ -160,30 +173,36 @@ def main():
                 if state == Helper.STATETOWER2:
                     preview = getPreview(player, fields, event.pos, Helper.TOWER2DATA)
 
-        lifes = wave.update(pathdict)
-        if lifes > 0:
-            player.removeLifes(lifes)
-            console_text.append("Lifes remaining: " + str(player.getLifes()))
-        elif lifes == -1:
-            console_text.append("Path is blocked!")
+        if player.getLifes() > 0:
+            lifes = wave.update(pathdict, speed)
+            if lifes > 0:
+                player.removeLifes(lifes)
+                console_text.append("Lifes remaining: " + str(player.getLifes()))
+            elif lifes == -1:
+                console_text.append("Path is blocked!")
 
-        minionpos = wave.minionpositions()
-        for t in turrets:
-            for m in minionpos:
-                if math.sqrt(math.pow((t.pos()[0] + 1 - m[0]), 2) + math.pow((t.pos()[1] + 1 - m[1]), 2)) <= t.getRange():
-                    shoot = t.shoot()
-                    if shoot[0]:
-                        value = wave.hit(minionpos.index(m), shoot[1], shoot[2], shoot[3])
-                        player.addScore(value)
-                        player.addMoney(value)
-                        p = GameObject.projectile(t.pos(),
-                                                  m, Helper.FIELDDATA, Helper.SHOOTDURATION,
-                                                  pygame.image.load(Helper.PROJETILE[t.projectile()]).convert_alpha())
-                        projectiles.append(p)
-                        break
-            t.update()
+            minionpos = wave.minionpositions()
+            for t in turrets:
+                for m in minionpos:
+                    if math.sqrt(math.pow((t.pos()[0] + 1 - m[0]), 2) + math.pow((t.pos()[1] + 1 - m[1]),
+                                                                                 2)) <= t.getRange():
+                        shoot = t.shoot()
+                        if shoot[0]:
+                            value = wave.hit(minionpos.index(m), shoot[1], shoot[2], shoot[3])
+                            player.addScore(value)
+                            player.addMoney(value)
+                            p = GameObject.projectile(t.pos(),
+                                                      m, Helper.FIELDDATA, Helper.SHOOTDURATION,
+                                                      pygame.image.load(
+                                                          Helper.PROJETILE[t.projectile()]).convert_alpha())
+                            projectiles.append(p)
+                            break
+                t.update(speed)
 
-        draw(screen, ui, turrets, wave, background, preview, projectiles)
+        else:
+            console_text.append("Game Over!")
+
+        draw(screen, ui, turrets, wave, background, preview, projectiles, speed)
 
         if console_text.__len__() > 3:
             label_console.setText([console_text[console_text.__len__() - 3],
@@ -194,7 +213,8 @@ def main():
 
         if info is not None:
             pos = info.pos()
-            pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX, (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
+            pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX,
+                   (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
             pygame.draw.circle(screen, (255, 0, 0), pos, info.getRange() * Helper.FIELDCELLWIDTH, 1)
             info_text = info.getInfo()
             label_info.setText(info_text).draw(screen)
@@ -203,6 +223,9 @@ def main():
             ui.activ()
         else:
             ui.deactiv()
+
+        if level == Helper.MAXLEVEL and wave.done():
+            console_text.append("YOU WON!!!!!!")
 
         label_score.setText([str(player.getScore())]).draw(screen)
         label_lifes.setText([str(player.getLifes())]).draw(screen)
@@ -233,7 +256,7 @@ def initUI():
     return ui
 
 
-def draw(screen, ui, turrets, wave, background, preview, projectiles):
+def draw(screen, ui, turrets, wave, background, preview, projectiles, speed):
         screen.blit(background, (0, 0))
 
         ui.draw(screen)
@@ -247,7 +270,7 @@ def draw(screen, ui, turrets, wave, background, preview, projectiles):
                    (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
             pygame.draw.circle(screen, (255, 0, 0), pos, preview.getRange() * Helper.FIELDCELLWIDTH, 1)
         for p in projectiles:
-            if p.update():
+            if p.update(speed):
                 p.draw(screen)
             else:
                 projectiles.remove(p)

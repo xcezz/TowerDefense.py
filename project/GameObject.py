@@ -21,18 +21,18 @@ class Wave(object):
         for i in range(0, self.__minions.__len__()):
             self.__minions[self.__minions.__len__() - 1 - i].draw(screen, fielddata)
 
-    def update(self, pathdict):
+    def update(self, pathdict, speed):
         self.__pathdict = pathdict
         if self.__count > 0:
-            self.__spawnticker -= 1
-            if self.__spawnticker is 0:
+            self.__spawnticker -= 1 * speed
+            if self.__spawnticker <= 0:
                 self.__minions.append(Minion(self.__miniondata))
                 self.__count -= 1
                 self.__spawnticker = self.__spawnrate
 
         finished = 0
         for m in self.__minions:
-            value = m.update(self.__pathdict.get(m.pos()))
+            value = m.update(self.__pathdict.get(m.pos()), speed)
             if value is True:
                 finished += 1
                 self.__minions.remove(m)
@@ -75,9 +75,9 @@ class Minion(object):
         self.__imageticker = 20
         self.__imageindex = 0
 
-    def move(self):
-        self.__x += self.__dir[0] / float(self.__speed * self.__freeze)
-        self.__y += self.__dir[1] / float(self.__speed * self.__freeze)
+    def move(self, speed):
+        self.__x += self.__dir[0] / float(self.__speed * self.__freeze) * speed
+        self.__y += self.__dir[1] / float(self.__speed * self.__freeze) * speed
 
     def draw(self, screen, fielddata):
         if self.__dir[0] is 1:
@@ -101,18 +101,18 @@ class Minion(object):
     def pos(self):
         return self.__pos
 
-    def update(self, dir):
+    def update(self, dir, speed):
         value = False
-        self.move()
+        self.move(speed)
         if dir == (0, 0):  #block
             self.__dir = (0, 1)
             value = -1
         else:
             self.__dir = dir
-        if self.__freezeduration is 0:
+        if self.__freezeduration <= 0:
             self.__freeze = 1
         else:
-            self.__freezeduration -= 1
+            self.__freezeduration -= 1 * speed
         if (self.__dir[0] is 1 and self.__x >= self.__pos[0] + 1) \
                 or (self.__dir[1] is 1 and self.__y >= self.__pos[1] + 1) \
                 or (self.__dir[0] is -1 and self.__x <= self.__pos[0] - 1) \
@@ -164,14 +164,14 @@ class Tower(object):
         return self.__x, self.__y
 
     def shoot(self):
-        if self.__cooldowntick is 0:
+        if self.__cooldowntick <= 0:
             self.__cooldowntick = self.__cooldown
             return True, self.__damage, self.__freeze, self.__freezeduration
         return False, 0, 1, 0
 
-    def update(self):
+    def update(self, speed):
         if self.__cooldowntick > 0:
-            self.__cooldowntick -= 1
+            self.__cooldowntick -= 1 * speed
 
     def getRange(self):
         return self.__range
@@ -224,11 +224,11 @@ class projectile(object):
     def draw(self, screen):
         screen.blit(self.__im, (self.__x, self.__y))
 
-    def update(self):
-        self.__tick -= 1
+    def update(self, speed):
+        self.__tick -= 1 * speed
         if self.__tick >= 0:
-            self.__x += self.__dx
-            self.__y += self.__dy
+            self.__x += self.__dx * speed
+            self.__y += self.__dy * speed
             return True
         else:
             return False
