@@ -99,7 +99,7 @@ def main():
                                             fields.deactivate((pos[0] + i, pos[1] + j), turret)
                                     pathdict = fields.getpath()
                                     preview = getPreview(player, fields, event.pos, Helper.TOWER1DATA)
-                                    # info = preview
+                                    info = preview
 
                         if state == Helper.STATETOWER2:
                             if not outsideoffield(pos):
@@ -115,7 +115,7 @@ def main():
                                             fields.deactivate((pos[0] + i, pos[1] + j), turret)
                                     pathdict = fields.getpath()
                                     preview = getPreview(player, fields, event.pos, Helper.TOWER2DATA)
-                                    # info = preview
+                                    info = preview
 
                         if state == Helper.STATESELECT:
                             info = fields.getTower(pos)
@@ -169,6 +169,16 @@ def main():
                             info.upgrade()
                             state = Helper.STATESELECT
 
+                    if click == Helper.STATETOWER1:
+                        image = pygame.image.load(Helper.TOWER1DATA["image"]).convert_alpha()
+                        image = pygame.transform.scale(image, (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
+                        info = GameObject.Tower(image, (None, None), Helper.TOWER1DATA)
+
+                    if click == Helper.STATETOWER2:
+                        image = pygame.image.load(Helper.TOWER2DATA["image"]).convert_alpha()
+                        image = pygame.transform.scale(image, (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
+                        info = GameObject.Tower(image, (None, None), Helper.TOWER2DATA)
+
                 if event.button == 3:
                     info = None
                     state = Helper.STATESELECT
@@ -221,15 +231,18 @@ def main():
             label_console.setText(console_text).draw(screen)
 
         if info is not None:
-            pos = info.pos()
-            pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX,
-                   (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
-            pygame.draw.circle(screen, (255, 255, 255), pos, info.getRange() * Helper.FIELDCELLWIDTH, 1)
+            if info.pos()[0] is not None:
+                pos = info.pos()
+                pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX,
+                       (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
+                pygame.draw.circle(screen, (255, 255, 255), pos, info.getRange() * Helper.FIELDCELLWIDTH, 1)
+                upgrade_text = info.getUpgrade()
+                label_upgrade.setText(upgrade_text).draw(screen)
+                ui.activ()
+            else:
+                ui.deactiv()
             info_text = info.getInfo()
             label_info.setText(info_text).draw(screen)
-            upgrade_text = info.getUpgrade()
-            label_upgrade.setText(upgrade_text).draw(screen)
-            ui.activ()
         else:
             ui.deactiv()
 
