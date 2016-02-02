@@ -138,8 +138,10 @@ class Tower(object):
     COSTMULT = 1.5
     DAMAGEMULT = 1.2
 
-    def __init__(self, im, pos, data):
+    def __init__(self, im, imw, pos, data):
         self.__im = im
+        self.__normal = im
+        self.__white = imw
         self.__x = pos[0]
         self.__y = pos[1]
         self.__cost = data["cost"]
@@ -209,6 +211,12 @@ class Tower(object):
 
     def projectile(self):
         return self.__projectile
+
+    def select(self):
+        self.__im = self.__white
+
+    def deselect(self):
+        self.__im = self.__normal
 
 
 class projectile(object):

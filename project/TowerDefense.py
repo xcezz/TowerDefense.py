@@ -90,7 +90,10 @@ def main():
                                 image = pygame.image.load(Helper.TOWER1DATA["image"]).convert_alpha()
                                 image = pygame.transform.scale(image,
                                                                (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
-                                turret = GameObject.Tower(image, pos, Helper.TOWER1DATA)
+                                imagew = pygame.image.load(Helper.TOWER1DATA["poss"]).convert_alpha()
+                                imagew = pygame.transform.scale(imagew,
+                                                                (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
+                                turret = GameObject.Tower(image, imagew, pos, Helper.TOWER1DATA)
                                 if fields.available(pos, turret.size()) and player.getMoney() >= turret.getCost():
                                     turrets.append(turret)
                                     player.addMoney(turret.getCost() * -1)
@@ -99,14 +102,19 @@ def main():
                                             fields.deactivate((pos[0] + i, pos[1] + j), turret)
                                     pathdict = fields.getpath()
                                     preview = getPreview(player, fields, event.pos, Helper.TOWER1DATA)
-                                    info = preview
+                                    if info is not None:
+                                        info.deselect()
+                                    info = turret
 
                         if state == Helper.STATETOWER2:
                             if not outsideoffield(pos):
                                 image = pygame.image.load(Helper.TOWER2DATA["image"]).convert_alpha()
                                 image = pygame.transform.scale(image,
                                                                (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
-                                turret = GameObject.Tower(image, pos, Helper.TOWER2DATA)
+                                imagew = pygame.image.load(Helper.TOWER2DATA["poss"]).convert_alpha()
+                                imagew = pygame.transform.scale(imagew,
+                                                                (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
+                                turret = GameObject.Tower(image, imagew, pos, Helper.TOWER2DATA)
                                 if fields.available(pos, turret.size()) and player.getMoney() >= turret.getCost():
                                     turrets.append(turret)
                                     player.addMoney(turret.getCost() * -1)
@@ -115,9 +123,13 @@ def main():
                                             fields.deactivate((pos[0] + i, pos[1] + j), turret)
                                     pathdict = fields.getpath()
                                     preview = getPreview(player, fields, event.pos, Helper.TOWER2DATA)
-                                    info = preview
+                                    if info is not None:
+                                        info.deselect()
+                                    info = turret
 
                         if state == Helper.STATESELECT:
+                            if info is not None:
+                                info.deselect()
                             info = fields.getTower(pos)
 
                     if click is not None:
@@ -170,16 +182,18 @@ def main():
                             state = Helper.STATESELECT
 
                     if click == Helper.STATETOWER1:
-                        image = pygame.image.load(Helper.TOWER1DATA["image"]).convert_alpha()
-                        image = pygame.transform.scale(image, (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
-                        info = GameObject.Tower(image, (None, None), Helper.TOWER1DATA)
+                        if info is not None:
+                            info.deselect()
+                        info = GameObject.Tower(None, None, (None, None), Helper.TOWER1DATA)
 
                     if click == Helper.STATETOWER2:
-                        image = pygame.image.load(Helper.TOWER2DATA["image"]).convert_alpha()
-                        image = pygame.transform.scale(image, (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
-                        info = GameObject.Tower(image, (None, None), Helper.TOWER2DATA)
+                        if info is not None:
+                            info.deselect()
+                        info = GameObject.Tower(None, None, (None, None), Helper.TOWER2DATA)
 
                 if event.button == 3:
+                    if info is not None:
+                        info.deselect()
                     info = None
                     state = Helper.STATESELECT
                     preview = None
@@ -232,6 +246,7 @@ def main():
 
         if info is not None:
             if info.pos()[0] is not None:
+                info.select()
                 pos = info.pos()
                 pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX,
                        (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
@@ -304,9 +319,12 @@ def outsideoffield(tpos):
 
 def getPreview(player, fields, mousepos, data):
     tpos = Helper.postocoord(mousepos)
-    image = pygame.image.load(data["poss"]).convert_alpha()
+    image = pygame.image.load(data["image"]).convert_alpha()
     image = pygame.transform.scale(image, (Helper.FIELDCELLHEIGHT * 2, Helper.FIELDCELLWIDTH * 2))
-    turret = GameObject.Tower(image, tpos, data)
+    imagew = pygame.image.load(data["poss"]).convert_alpha()
+    imagew = pygame.transform.scale(imagew, (Helper.FIELDCELLHEIGHT * 2, Helper.FIELDCELLWIDTH * 2))
+    turret = GameObject.Tower(image, imagew, tpos, data)
+    turret.setImage(imagew)
     if not (fields.available(tpos, turret.size()) and player.getMoney() >= turret.getCost()):
         image = pygame.transform.scale(pygame.image.load(data["imp"]).convert_alpha(),
                                        (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
