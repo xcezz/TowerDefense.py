@@ -148,21 +148,7 @@ def main():
                                 "Level " + str(level) + ": " + str(Helper.WAVES[level]["type"]) + " enemies - "
                                 + str(Helper.WAVES[level]["hp"]) + " hp, worth " + str(
                                     Helper.WAVES[level]["score"]) + "g each.")
-                            console_text.append(
-                                "Level " + str(level + 1) + ": " + str(Helper.WAVES[level + 1]["type"]) + " enemies - "
-                                + str(Helper.WAVES[level + 1]["hp"]) + " hp, worth " + str(
-                                    Helper.WAVES[level + 1]["score"]) + "g each.")
-
-                        elif level == Helper.MAXLEVEL - 1:
-                            level += 1
-                            wave = GameObject.Wave(Helper.WAVES[level],
-                                                   Helper.animations(pygame, Helper.WAVES[level]["im"]),
-                                                   pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
-                            state = Helper.STATESELECT
-                            console_text.append(
-                                "Level " + str(level + 1) + ": " + str(Helper.WAVES[level + 1]["type"]) + " enemies - "
-                                + str(Helper.WAVES[level + 1]["hp"]) + " hp, worth " + str(
-                                    Helper.WAVES[level + 1]["score"]) + "g each.")
+                        if level == Helper.MAXLEVEL:
                             console_text.append("You did it! Last Level incoming.")
 
                     if click == Helper.STATEDELETE and info is not None:
