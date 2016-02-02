@@ -138,7 +138,7 @@ def main():
                             preview = None
 
                     if click == Helper.STATEGO and wave.done():
-                        if level < Helper.MAXLEVEL - 1:
+                        if level < Helper.MAXLEVEL:
                             level += 1
                             wave = GameObject.Wave(Helper.WAVES[level],
                                                    Helper.animations(pygame, Helper.WAVES[level]["im"]),
