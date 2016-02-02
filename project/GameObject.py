@@ -185,17 +185,21 @@ class Tower(object):
         self.__range += 1
         self.__cost = int(self.__cost * Tower.COSTMULT)
 
-    def unavailable(self, im):
+    def setImage(self, im):
         self.__im = im
 
     def getInfo(self):
-        return ["Sell: " + str(int(self.__cost / Tower.COSTMULT)),
+        return ["",
+                "",
+                "Sell: " + str(int(self.__cost / Tower.COSTMULT)),
                 "Level: " + str(self.__level),
                 "Range: " + str(self.__range),
                 "Damage: " + str(self.__damage)]
 
     def getUpgrade(self):
-        return ["Cost: " + str(self.__cost),
+        return ["Upgrade " + str(self.__level),
+                "",
+                "Cost: " + str(self.__cost),
                 "Level: " + str(self.__level + 1),
                 "Range: " + str(self.__range + 1),
                 "Damage: " + str(int(self.__damage * Tower.DAMAGEMULT))]

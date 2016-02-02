@@ -38,7 +38,7 @@ FIELDUIDATA = {"offsetX": FIELDOFFSETX,
                "height": FIELDSIZE * FIELDCELLHEIGHT,
                "statechange": STATESELECT}
 
-PLAYERDATA = {"lifes": 20,
+PLAYERDATA = {"lives": 20,
               "money": 50}
 
 TOWER1DATA = {"cost": 5,
@@ -49,6 +49,7 @@ TOWER1DATA = {"cost": 5,
               "range": 5,
               "image": "Images/Tower1.png",
               "imp": "Images/Tower1_Red.png",
+              "poss": "Images/Tower1_White.png",
               "size": 2,
               "projectile": 0}
 
@@ -60,6 +61,7 @@ TOWER2DATA = {"cost": 5,
               "freezeduration": 50,
               "image": "Images/Tower2.png",
               "imp": "Images/Tower2_Red.png",
+              "poss": "Images/Tower2_White.png",
               "size": 2,
               "projectile": 1}
 
@@ -104,7 +106,7 @@ UPGRADE = {"x": 645,
            "statechange": STATEUPGRADE}
 
 LABELPOS = {"score": (681, 74),
-            "lifes": (587, 113),
+            "lives": (587, 113),
             "money": (681, 113),
             "console": (57, 525),
             "info": (550, 324),
@@ -135,7 +137,8 @@ WAVES = {0: {"hp": 0,
              "score": 0,
              "goal": GOAL,
              "spawnrate": 0,
-             "im": "Images/GenericEnemy.png"}}
+             "im": "Images/GenericEnemy.png",
+             "type": 0}}
 
 for i in range(1, MAXLEVEL + 1):
     WAVES.update({i: {"hp": 20 + int(i * 20 * 1.2),
@@ -144,15 +147,18 @@ for i in range(1, MAXLEVEL + 1):
                       "score": 2,
                       "goal": GOAL,
                       "spawnrate": 30,
-                      "im": "Images/GenericEnemy.png"}})
+                      "im": "Images/GenericEnemy.png",
+                      "type": "generic"}})
     if i % 2 == 0:
         WAVES[i].update({"im": "Images/FastEnemy.png"})
         WAVES[i].update({"speed": 10})
+        WAVES[i].update({"type": "fast"})
     if i % 5 == 0:
         WAVES[i].update({"im": "Images/SlowEnemy.png"})
         WAVES[i].update({"speed": 30})
         WAVES[i].update({"count": 20})
         WAVES[i].update({"spawnrate": 60})
         WAVES[i].update({"hp": 50 + int(i * 40 * 1.4)})
+        WAVES[i].update({"type": "slow"})
 WAVES[MAXLEVEL].update({"count": 50})
 WAVES[MAXLEVEL].update({"count": 50})

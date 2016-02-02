@@ -3,7 +3,7 @@ class Player(object):
     def __init__(self, data):
         self.__score = 0
         self.__money = data["money"]
-        self.__lifes = data["lifes"]
+        self.__lives = data["lives"]
 
     def addScore(self, value):
         self.__score += value
@@ -11,8 +11,8 @@ class Player(object):
     def getScore(self):
         return self.__score
 
-    def removeLifes(self, value):
-        self.__lifes -= value
+    def removeLives(self, value):
+        self.__lives -= value
 
     def addMoney(self, value):
         self.__money += value
@@ -20,5 +20,5 @@ class Player(object):
     def getMoney(self):
         return self.__money
 
-    def getLifes(self):
-        return self.__lifes
+    def getLives(self):
+        return self.__lives

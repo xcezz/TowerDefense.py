@@ -8,11 +8,10 @@ import GameObject
 
 
 def main():
-
     # Initialise screen
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption('Towerdefense')
+    pygame.display.set_caption('TowerDefense.py - Grundkurs Python WS15/16')
 
     state = Helper.STATESELECT
 
@@ -51,7 +50,7 @@ def main():
     myfont = pygame.font.SysFont("Verdana", 11)
 
     label_score = UI.Text(Helper.LABELPOS["score"], myfont)
-    label_lifes = UI.Text(Helper.LABELPOS["lifes"], myfont)
+    label_lives = UI.Text(Helper.LABELPOS["lives"], myfont)
     label_money = UI.Text(Helper.LABELPOS["money"], myfont)
     label_level = UI.Text(Helper.LABELPOS["level"], myfont)
     label_console = UI.Text(Helper.LABELPOS["console"], myfont)
@@ -100,6 +99,7 @@ def main():
                                             fields.deactivate((pos[0] + i, pos[1] + j), turret)
                                     pathdict = fields.getpath()
                                     preview = getPreview(player, fields, event.pos, Helper.TOWER1DATA)
+                                    # info = preview
 
                         if state == Helper.STATETOWER2:
                             if not outsideoffield(pos):
@@ -115,6 +115,7 @@ def main():
                                             fields.deactivate((pos[0] + i, pos[1] + j), turret)
                                     pathdict = fields.getpath()
                                     preview = getPreview(player, fields, event.pos, Helper.TOWER2DATA)
+                                    # info = preview
 
                         if state == Helper.STATESELECT:
                             info = fields.getTower(pos)
@@ -131,19 +132,26 @@ def main():
                                                    Helper.animations(pygame, Helper.WAVES[level]["im"]),
                                                    pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
                             state = Helper.STATESELECT
-                            console_text.append("This Wave: HP - " + str(Helper.WAVES[level]["hp"]) + " Value - " +
-                                                str(Helper.WAVES[level]["score"]))
-                            console_text.append("Next Wave: HP - " + str(Helper.WAVES[level + 1]["hp"]) + " Value - " +
-                                                str(Helper.WAVES[level + 1]["score"]))
+                            console_text.append(
+                                "Level " + str(level) + ": " + str(Helper.WAVES[level]["type"]) + " enemies - "
+                                + str(Helper.WAVES[level]["hp"]) + " hp, worth " + str(
+                                    Helper.WAVES[level]["score"]) + "g each.")
+                            console_text.append(
+                                "Level " + str(level + 1) + ": " + str(Helper.WAVES[level + 1]["type"]) + " enemies - "
+                                + str(Helper.WAVES[level + 1]["hp"]) + " hp, worth " + str(
+                                    Helper.WAVES[level + 1]["score"]) + "g each.")
+
                         elif level == Helper.MAXLEVEL - 1:
                             level += 1
                             wave = GameObject.Wave(Helper.WAVES[level],
                                                    Helper.animations(pygame, Helper.WAVES[level]["im"]),
                                                    pathdict, (Helper.FIELDSIZE / 2, -Helper.FIELDSTART))
                             state = Helper.STATESELECT
-                            console_text.append("This Wave: HP - " + str(Helper.WAVES[level]["hp"]) + " Value - " +
-                                                str(Helper.WAVES[level]["score"]))
-                            console_text.append("Last Level!")
+                            console_text.append(
+                                "Level " + str(level + 1) + ": " + str(Helper.WAVES[level + 1]["type"]) + " enemies - "
+                                + str(Helper.WAVES[level + 1]["hp"]) + " hp, worth " + str(
+                                    Helper.WAVES[level + 1]["score"]) + "g each.")
+                            console_text.append("You did it! Last Level incoming.")
 
                     if click == Helper.STATEDELETE and info is not None:
                         player.addMoney(info.sell())
@@ -173,13 +181,14 @@ def main():
                 if state == Helper.STATETOWER2:
                     preview = getPreview(player, fields, event.pos, Helper.TOWER2DATA)
 
-        if player.getLifes() > 0:
-            lifes = wave.update(pathdict, speed)
-            if lifes > 0:
-                player.removeLifes(lifes)
-                console_text.append("Lifes remaining: " + str(player.getLifes()))
-            elif lifes == -1:
-                console_text.append("Path is blocked!")
+        if player.getLives() > 0:
+            lives = wave.update(pathdict, speed)
+            if lives > 0:
+                player.removeLives(lives)
+                console_text.append("Lives remaining: " + str(player.getLives()))
+            elif lives == -1:
+                console_text.append("You are blocking every possible path!")
+                console_text.append("Better sell a tower and rework your maze.")
 
             minionpos = wave.minionpositions()
             for t in turrets:
@@ -200,14 +209,14 @@ def main():
                 t.update(speed)
 
         else:
-            console_text.append("Game Over!")
+            console_text.append("Game over! You got wrecked, sorry.")
 
         draw(screen, ui, turrets, wave, background, preview, projectiles, speed)
 
         if console_text.__len__() > 3:
             label_console.setText([console_text[console_text.__len__() - 3],
-                                  console_text[console_text.__len__() - 2],
-                                  console_text[console_text.__len__() - 1]]).draw(screen)
+                                   console_text[console_text.__len__() - 2],
+                                   console_text[console_text.__len__() - 1]]).draw(screen)
         else:
             label_console.setText(console_text).draw(screen)
 
@@ -215,7 +224,7 @@ def main():
             pos = info.pos()
             pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX,
                    (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
-            pygame.draw.circle(screen, (255, 0, 0), pos, info.getRange() * Helper.FIELDCELLWIDTH, 1)
+            pygame.draw.circle(screen, (255, 255, 255), pos, info.getRange() * Helper.FIELDCELLWIDTH, 1)
             info_text = info.getInfo()
             label_info.setText(info_text).draw(screen)
             upgrade_text = info.getUpgrade()
@@ -225,10 +234,10 @@ def main():
             ui.deactiv()
 
         if level == Helper.MAXLEVEL and wave.done():
-            console_text.append("YOU WON!!!!!!")
+            console_text.append("Congratulations! You won.")
 
         label_score.setText([str(player.getScore())]).draw(screen)
-        label_lifes.setText([str(player.getLifes())]).draw(screen)
+        label_lives.setText([str(player.getLives())]).draw(screen)
         label_money.setText([str(player.getMoney())]).draw(screen)
         label_level.setText([str(level)]).draw(screen)
 
@@ -257,23 +266,23 @@ def initUI():
 
 
 def draw(screen, ui, turrets, wave, background, preview, projectiles, speed):
-        screen.blit(background, (0, 0))
+    screen.blit(background, (0, 0))
 
-        ui.draw(screen)
-        wave.draw(screen, Helper.FIELDDATA)
-        for t in turrets:
-            t.draw(screen, Helper.FIELDDATA)
-        if preview is not None:
-            preview.draw(screen, Helper.FIELDDATA)
-            pos = preview.pos()
-            pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX,
-                   (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
-            pygame.draw.circle(screen, (255, 0, 0), pos, preview.getRange() * Helper.FIELDCELLWIDTH, 1)
-        for p in projectiles:
-            if p.update(speed):
-                p.draw(screen)
-            else:
-                projectiles.remove(p)
+    ui.draw(screen)
+    wave.draw(screen, Helper.FIELDDATA)
+    for t in turrets:
+        t.draw(screen, Helper.FIELDDATA)
+    if preview is not None:
+        preview.draw(screen, Helper.FIELDDATA)
+        pos = preview.pos()
+        pos = ((pos[0] + 1) * Helper.FIELDCELLWIDTH + Helper.FIELDOFFSETX,
+               (pos[1] + 1) * Helper.FIELDCELLHEIGHT + Helper.FIELDOFFSETY)
+        pygame.draw.circle(screen, (255, 255, 255), pos, preview.getRange() * Helper.FIELDCELLWIDTH, 1)
+    for p in projectiles:
+        if p.update(speed):
+            p.draw(screen)
+        else:
+            projectiles.remove(p)
 
 
 def outsideoffield(tpos):
@@ -282,13 +291,13 @@ def outsideoffield(tpos):
 
 def getPreview(player, fields, mousepos, data):
     tpos = Helper.postocoord(mousepos)
-    image = pygame.image.load(data["image"]).convert_alpha()
+    image = pygame.image.load(data["poss"]).convert_alpha()
     image = pygame.transform.scale(image, (Helper.FIELDCELLHEIGHT * 2, Helper.FIELDCELLWIDTH * 2))
     turret = GameObject.Tower(image, tpos, data)
     if not (fields.available(tpos, turret.size()) and player.getMoney() >= turret.getCost()):
         image = pygame.transform.scale(pygame.image.load(data["imp"]).convert_alpha(),
                                        (Helper.FIELDCELLWIDTH * 2, Helper.FIELDCELLHEIGHT * 2))
-        turret.unavailable(image)
+        turret.setImage(image)
     preview = turret
     if outsideoffield(tpos):
         preview = None
